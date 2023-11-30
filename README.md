@@ -25,7 +25,6 @@ A C# library for decoding the Wenet ASR onnx model
 引用
 ```csharp
 using WenetConformerAsr;
-using WenetConformerAsr.Examples.Utils;
 ```
 调用(use non-streaming onnx model decoding)
 ```csharp
