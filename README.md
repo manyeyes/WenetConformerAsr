@@ -26,7 +26,7 @@ A C# library for decoding the Wenet ASR onnx model
 ```csharp
 using WenetConformerAsr;
 ```
-调用(use non-streaming onnx model decoding)
+调用offline-model (use non-streaming onnx model decoding)
 ```csharp
 //load model
 string applicationBase = AppDomain.CurrentDomain.BaseDirectory;
@@ -42,8 +42,9 @@ stream.AddSamples(sample);
 WenetConformerAsr.Model.OfflineRecognizerResultEntity result = offlineRecognizer.GetResult(stream);
 Console.WriteLine(result.Text);
 ```
+offline-model decoding rtf≈0.12
 
-调用(use streaming onnx model decoding)
+调用online-model (use streaming onnx model decoding)
 ```csharp
 //load model
 string applicationBase = AppDomain.CurrentDomain.BaseDirectory;
@@ -64,3 +65,4 @@ while (true)
     Console.WriteLine(result.Text);
 }
 ```
+online-model decoding rtf≈0.22
