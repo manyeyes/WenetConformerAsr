@@ -11,6 +11,7 @@ A C# library for decoding the Wenet ASR model
 | ------------ | ------------ |------------|
 | WenetConformerAsr  | 合二为一  |1.加载wenet官方导出的onnx模型|
 | WenetConformerAsr2  |各自独立   |1.加载wenet官方导出的onnx模型。2.便于扩展，如果自己导出的streaming和non-streaming onnx模型配置参数不尽相同，可以在各自的模块上进行调整而互不影响|
+
 如果没有二次开发的需求，想要直接使用wenet管导模型，推荐使用WenetConformerAsr.
 
 ##### 模型的下载
