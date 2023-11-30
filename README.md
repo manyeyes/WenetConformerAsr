@@ -29,6 +29,7 @@ using WenetConformerAsr;
 调用(use non-streaming onnx model decoding)
 ```csharp
 //load model
+string applicationBase = AppDomain.CurrentDomain.BaseDirectory;
 string modelName = "wenet_onnx_wenetspeech_u2pp_conformer_20220506_offline";
 string encoderFilePath = applicationBase + "./" + modelName + "/encoder.quant.onnx";
 string decoderFilePath = applicationBase + "./" + modelName + "/decoder.quant.onnx";
@@ -45,6 +46,7 @@ Console.WriteLine(result.Text);
 调用(use streaming onnx model decoding)
 ```csharp
 //load model
+string applicationBase = AppDomain.CurrentDomain.BaseDirectory;
 string modelName = "wenet_onnx_wenetspeech_u2pp_conformer_20220506_online";
 string encoderFilePath = applicationBase + "./" + modelName + "/encoder.quant.onnx";
 string decoderFilePath = applicationBase + "./" + modelName + "/decoder.quant.onnx";
