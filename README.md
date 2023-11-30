@@ -54,13 +54,13 @@ string ctcFilePath = applicationBase + "./" + modelName + "/ctc.quant.onnx";
 string tokensFilePath = applicationBase + "./" + modelName + "/units.txt";
 WenetConformerAsr.OnlineRecognizer onlineRecognizer = new WenetConformerAsr.OnlineRecognizer(encoderFilePath, decoderFilePath, ctcFilePath, tokensFilePath);
 //这里省略音频文件到sample的转换，或者来自于麦克风，具体如何做，可以参考examples中的test_WenetConformerAsrOnlineRecognizer
-WenetConformerAsr.OnlineStream stream = offlineRecognizer.CreateOfflineStream();
+WenetConformerAsr.OnlineStream stream = onlineRecognizer.CreateOnlineStream();
 while (true)
 {
     //这是一个简单的解码示意，如需了解更详细周密的流程，请参考examples
 	//sample=来自音频文件或麦克风
     stream.AddSamples(sample);
-    WenetConformerAsr.Model.OfflineRecognizerResultEntity result = offlineRecognizer.GetResult(stream);
+    WenetConformerAsr.Model.OnlineRecognizerResultEntity result = onlineRecognizer.GetResult(stream);
     Console.WriteLine(result.Text);
 }
 ```
