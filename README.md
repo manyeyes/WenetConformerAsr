@@ -1,10 +1,14 @@
 # WenetConformerAsr
 A C# library for decoding the Wenet ASR onnx model
+
 这是一个用于解码 wenet asr onnx 模型的c#库，使用c#编写，基于.net6.0，支持在多平台（包括windows、linux、android、macos、ios等）编译、调用。
+
 可以使用maui或uno迅速构建可在多平台运行的应用程序。
 ##### 项目中WenetConformerAsr和WenetConformerAsr2的区别:
 1.共同之处：
+
 功能一样，调用的方式一样，都支持streaming和non-streaming模型的解码。
+
 2.不同之处：
 
 | library  | streaming和non-streaming模型加载模块  |模型和扩展|
