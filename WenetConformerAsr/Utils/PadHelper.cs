@@ -1,9 +1,4 @@
 ﻿using WenetConformerAsr.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WenetConformerAsr.Utils
 {
@@ -42,6 +37,7 @@ namespace WenetConformerAsr.Utils
                 float[]? curr_speech = floats[i];
                 float[] padspeech = new float[max_speech_length];
                 Array.Copy(curr_speech, 0, padspeech, 0, curr_speech.Length);
+                //Array.Copy(nullspeech, 0, padspeech, curr_speech.Length, nullspeech.Length);
                 for (int j = 0; j < padspeech.Length; j++)
                 {
 #pragma warning disable CS8602 // 解引用可能出现空引用。
@@ -49,6 +45,7 @@ namespace WenetConformerAsr.Utils
 #pragma warning restore CS8602 // 解引用可能出现空引用。 
                 }
             }
+            //Array.Copy(xxx, 0, speech, 0, speech.Length);//one len is 3120
             int s = 0;
             for (int i = 0; i < xxx.GetLength(0); i++)
             {

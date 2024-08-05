@@ -1,10 +1,5 @@
 ﻿// See https://github.com/manyeyes for more information
 // Copyright (c)  2023 by manyeyes
-
-// See https://github.com/manyeyes for more information
-// Copyright (c)  2023 by manyeyes
-using System.Collections;
-
 namespace WenetConformerAsr.Model
 {
     public class EncoderOutputEntity

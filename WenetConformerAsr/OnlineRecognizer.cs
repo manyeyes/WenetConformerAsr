@@ -1,16 +1,8 @@
 ﻿// See https://github.com/manyeyes for more information
 // Copyright (c)  2023 by manyeyes
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WenetConformerAsr.Model;
-using WenetConformerAsr.Utils;
-using Microsoft.ML;
-using Microsoft.ML.OnnxRuntime;
-using Microsoft.ML.OnnxRuntime.Tensors;
 using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
-using System.IO;
+using WenetConformerAsr.Model;
 
 namespace WenetConformerAsr
 {
@@ -55,12 +47,10 @@ namespace WenetConformerAsr
                 return;
             }
             List<OnlineStream> streamsWorking = new List<OnlineStream>();
-            int contextSize = 2;//_onlineModel.CustomMetadata.Context_size;
+            int contextSize = 2;
             List<AsrInputEntity> modelInputs = new List<AsrInputEntity>();
             List<List<float[]>> statesList = new List<List<float[]>>();
             List<Int64[]> hypList = new List<Int64[]>();
-            //List<Int64>[] tokens = new List<Int64>[batchSize];
-            //Int64[] hyps = new Int64[_context_size * batchSize];
             List<List<Int64>> tokens = new List<List<Int64>>();
             int padFrameNum = _asrProj.ChunkLength;
             int shiftFrameNum = _asrProj.ShiftLength;
@@ -99,8 +89,7 @@ namespace WenetConformerAsr
                 stackStatesList = _asrProj.stack_states(statesList);
                 EncoderOutputEntity encoderOutputEntity = _asrProj.EncoderProj(modelInputs, stackStatesList, offset);
                 CtcOutputEntity ctcOutputEntity = _asrProj.CtcProj(encoderOutputEntity);
-                //TODO
-                //DecoderOutputEntity decoderOutputEntity = _asrProj.DecoderProj(encoderOutputEntity, ctcOutputEntity);
+                DecoderOutputEntity decoderOutputEntity = _asrProj.DecoderProj(encoderOutputEntity, ctcOutputEntity);
                 List<List<float[]>> next_statesList = new List<List<float[]>>();
                 next_statesList = _asrProj.unstack_states(encoderOutputEntity.StatesList);
                 int streamIndex = 0;
@@ -116,6 +105,7 @@ namespace WenetConformerAsr
             {
                 //
             }
+
         }
 
         private List<OnlineRecognizerResultEntity> DecodeMulti(List<OnlineStream> streams)
@@ -132,15 +122,16 @@ namespace WenetConformerAsr
                     {
                         break;
                     }
-                    if (_tokens[token].Split(' ')[0] != "</s>" && _tokens[token].Split(' ')[0] != "<s>" && _tokens[token].Split(' ')[0] != "<sos/eos>" && _tokens[token].Split(' ')[0] != "<blank>" && _tokens[token].Split(' ')[0] != "<unk>")
+                    string currToken = _tokens[token].Split(' ')[0];
+                    if (currToken != "</s>" && currToken != "<s>" && currToken != "<sos/eos>" && currToken != "<blank>" && currToken != "<unk>")
                     {
-                        if (IsChinese(_tokens[token].Split(' ')[0], true))
+                        if (IsChinese(currToken, true))
                         {
-                            text_result += _tokens[token].Split(' ')[0];
+                            text_result += currToken;
                         }
                         else
                         {
-                            text_result += "▁" + _tokens[token].Split(' ')[0] + "▁";
+                            text_result += "▁" + currToken + "▁";
                         }
                     }
                 }

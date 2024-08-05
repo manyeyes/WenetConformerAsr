@@ -1,16 +1,8 @@
 ﻿// See https://github.com/manyeyes for more information
 // Copyright (c)  2023 by manyeyes
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WenetConformerAsr.Model;
 using KaldiNativeFbankSharp;
-using System.Runtime.InteropServices;
 using System.Data;
-using System.Text.Json;
-using YamlDotNet.Core;
+using WenetConformerAsr.Model;
 
 namespace WenetConformerAsr
 {
@@ -66,6 +58,22 @@ namespace WenetConformerAsr
                     return (Int16)(Math.Ceiling(sample * 32767.0f));
                 }
             }
+        }
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_onlineFbank != null)
+                {
+                    _onlineFbank.Dispose();
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }
