@@ -6,22 +6,22 @@ namespace WenetConformerAsr.Examples
     {
         public static WenetConformerAsr.OfflineRecognizer initWenetConformerAsrOfflineRecognizer(string modelName)
         {
-            string encoderFilePath = applicationBase + "./" + modelName + "/encoder.quant.onnx";
-            string decoderFilePath = applicationBase + "./" + modelName + "/decoder.quant.onnx";
-            string ctcFilePath = applicationBase + "./" + modelName + "/ctc.quant.onnx";
+            string encoderFilePath = applicationBase + "./" + modelName + "/encoder.int8.onnx";
+            string decoderFilePath = applicationBase + "./" + modelName + "/decoder.int8.onnx";
+            string ctcFilePath = applicationBase + "./" + modelName + "/ctc.int8.onnx";
             //string configFilePath = applicationBase + "./" + modelName + "/asr.yaml";
-            string tokensFilePath = applicationBase + "./" + modelName + "/units.txt";
+            string tokensFilePath = applicationBase + "./" + modelName + "/tokens.txt";
             WenetConformerAsr.OfflineRecognizer offlineRecognizer = new WenetConformerAsr.OfflineRecognizer(encoderFilePath, decoderFilePath, ctcFilePath, tokensFilePath, threadsNum: 1);
             return offlineRecognizer;
         }
 
         public static void test_WenetConformerAsrOfflineRecognizer(List<float[]>? samples = null)
         {
-            //string modelName = "wenet_onnx_aishell_u2pp_conformer_20211025_offline";
-            string modelName = "wenet_onnx_gigaspeech_u2pp_conformer_20210728_offline";
-            //string modelName = "wenet_onnx_wenetspeech_u2pp_conformer_20220506_offline";
-            //string modelName = "wenet_onnx_aishell_u2pp_conformer_20210601_offline";
-            //string modelName = "wenet_onnx_aishell2_u2pp_conformer_20210618_offline";
+            //string modelName = "wenet_u2pp_conformer_aishell_onnx_offline_20211025";
+            string modelName = "wenet_u2pp_conformer_gigaspeech_onnx_offline_20210728";
+            //string modelName = "wenet_u2pp_conformer_wenetspeech_onnx_offline_20220506";
+            //string modelName = "wenet_u2pp_conformer_aishell_onnx_offline_20210601";
+            //string modelName = "wenet_u2pp_conformer_aishell2_onnx_offline_20210618";
             WenetConformerAsr.OfflineRecognizer offlineRecognizer = initWenetConformerAsrOfflineRecognizer(modelName);
             TimeSpan total_duration = new TimeSpan(0L);
             List<List<float[]>> samplesList = new List<List<float[]>>();
@@ -95,22 +95,22 @@ namespace WenetConformerAsr.Examples
 
         public static WenetConformerAsr.OnlineRecognizer initWenetConformerAsrOnlineRecognizer(string modelName)
         {
-            string encoderFilePath = applicationBase + "./" + modelName + "/encoder.quant.onnx";
-            string decoderFilePath = applicationBase + "./" + modelName + "/decoder.quant.onnx";
-            string ctcFilePath = applicationBase + "./" + modelName + "/ctc.quant.onnx";
+            string encoderFilePath = applicationBase + "./" + modelName + "/encoder.int8.onnx";
+            string decoderFilePath = applicationBase + "./" + modelName + "/decoder.int8.onnx";
+            string ctcFilePath = applicationBase + "./" + modelName + "/ctc.int8.onnx";
             //string configFilePath = applicationBase + "./" + modelName + "/asr.yaml";
-            string tokensFilePath = applicationBase + "./" + modelName + "/units.txt";
+            string tokensFilePath = applicationBase + "./" + modelName + "/tokens.txt";
             WenetConformerAsr.OnlineRecognizer onlineRecognizer = new WenetConformerAsr.OnlineRecognizer(encoderFilePath, decoderFilePath, ctcFilePath, tokensFilePath);
             return onlineRecognizer;
         }
 
         public static void test_WenetConformerAsrOnlineRecognizer(List<float[]>? samples = null)
         {
-            //string modelName = "wenet_onnx_aishell_u2pp_conformer_20211025_online";
-            //string modelName = "wenet_onnx_gigaspeech_u2pp_conformer_20210728_online";
-            string modelName = "wenet_onnx_wenetspeech_u2pp_conformer_20220506_online";
-            //string modelName = "wenet_onnx_aishell_u2pp_conformer_20210601_online";
-            //string modelName = "wenet_onnx_aishell2_u2pp_conformer_20210618_online";
+            //string modelName = "wenet-u2pp-conformer-aishell-onnx-online-20211025";
+            //string modelName = "wenet-u2pp-conformer-gigaspeech-onnx-online-20210728";
+            string modelName = "wenet-u2pp-conformer-wenetspeech-onnx-online-20220506";
+            //string modelName = "wenet-u2pp-conformer-aishell-onnx-online-20210601";
+            //string modelName = "wenet-u2pp-conformer-aishell2-onnx-online-20210618";
             WenetConformerAsr.OnlineRecognizer onlineRecognizer = initWenetConformerAsrOnlineRecognizer(modelName);
             TimeSpan total_duration = TimeSpan.Zero;
             TimeSpan start_time = TimeSpan.Zero;
