@@ -32,7 +32,7 @@ namespace WenetConformerAsr
                 _shiftLength = asrProj.ShiftLength;
                 _featureDim = asrProj.FeatureDim;
                 _sampleRate = asrProj.SampleRate;
-                _customMetadata = asrProj.CustomMetadata;                
+                _customMetadata = asrProj.CustomMetadata;
                 _required_cache_size = asrProj.Required_cache_size;
                 if (_required_cache_size > 0)
                 {

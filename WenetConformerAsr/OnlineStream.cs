@@ -144,7 +144,6 @@ namespace WenetConformerAsr
                     int repeatNum = (_lfr_m - 1) / 2 - 1;
                     int featureDim = _frontendConfEntity.n_mels;
                     float[] firstFbank = new float[featureDim];
-                    //Array.Copy(features, 0, firstFbank, 0, firstFbank.Length);
                     float[] features_temp = new float[firstFbank.Length * repeatNum + features.Length];
                     for (int i = 0; i < repeatNum; i++)
                     {
@@ -193,10 +192,9 @@ namespace WenetConformerAsr
                 //use non-streaming asr,get all chunks
                 if (chunkLength * featureDim <= _asrInputEntity.SpeechLength)
                 {
-
                     float[] padChunk = new float[chunkLength * featureDim];
                     float[]? features = _asrInputEntity.Speech;
-                    Array.Copy(features, 0, padChunk, 0, padChunk.Length);                    
+                    Array.Copy(features, 0, padChunk, 0, padChunk.Length);
                     decodeChunk = new float[_cacheFeats.Length + padChunk.Length];
                     Array.Copy(_cacheFeats, 0, decodeChunk, 0, _cacheFeats.Length);
                     Array.Copy(padChunk, 0, decodeChunk, _cacheFeats.Length, padChunk.Length);
@@ -236,7 +234,7 @@ namespace WenetConformerAsr
         private float[] InitCacheFeats(int batchSize = 1)
         {
 
-            int cached_feature_size = 0;//1 + _right_context - _subsampling_rate;//TODO temp test
+            int cached_feature_size = 0;
             float[] cacheFeats = new float[batchSize * cached_feature_size * 80];
             return cacheFeats;
         }

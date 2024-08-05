@@ -1,13 +1,8 @@
-﻿using Microsoft.ML.OnnxRuntime.Tensors;
-using Microsoft.ML.OnnxRuntime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.ML.OnnxRuntime;
+using Microsoft.ML.OnnxRuntime.Tensors;
+using System.Diagnostics;
 using WenetConformerAsr.Model;
 using WenetConformerAsr.Utils;
-using System.Diagnostics;
 
 namespace WenetConformerAsr
 {
@@ -18,8 +13,8 @@ namespace WenetConformerAsr
         private InferenceSession _ctcSession;
         private CustomMetadata _customMetadata;
         private int _blank_id = 0;
-        private int _sos_eos_id = 1;
-        private int _unk_id = 2;
+        private int _unk_id = 1;
+        private int _sos_eos_id = 0;
 
         private int _featureDim = 80;
         private int _sampleRate = 16000;
@@ -41,7 +36,6 @@ namespace WenetConformerAsr
             _shiftLength = asrModel.ShiftLength;
             _required_cache_size = asrModel.Required_cache_size;
         }
-
         public InferenceSession EncoderSession { get => _encoderSession; set => _encoderSession = value; }
         public InferenceSession DecoderSession { get => _decoderSession; set => _decoderSession = value; }
         public InferenceSession CtcSession { get => _ctcSession; set => _ctcSession = value; }
@@ -66,7 +60,6 @@ namespace WenetConformerAsr
             statesList.Add(cnn_cache);
             return statesList;
         }
-
         private float[] InitCacheFeats(int batchSize = 1)
         {
 
@@ -88,7 +81,6 @@ namespace WenetConformerAsr
             statesList.Add(states);
             return statesList;
         }
-
         public EncoderOutputEntity EncoderProj(List<AsrInputEntity> modelInputs, List<float[]> statesList, int offset)
         {
             float[] padSequence = PadHelper.PadSequence(modelInputs);
@@ -220,6 +212,7 @@ namespace WenetConformerAsr
                     var ctcResultsArray = ctcResults.ToArray();
                     var probsTensor = ctcResultsArray[0].AsTensor<float>();
                     ctcOutput.Probs = probsTensor.ToArray();
+
                     List<Int64[]> token_nums = new List<Int64[]> { };
                     List<Int64> token_len = new List<Int64>();
 
@@ -235,8 +228,25 @@ namespace WenetConformerAsr
                             }
                             item[j] = token_num;
                         }
+                        List<Int64> item1 = new List<Int64>(item);
+                        item1.Remove(item1.First());
+                        List<Int64> item2 = new List<Int64>(item);
+                        item2.RemoveAt(item2.Count - 1);
+                        List<Int64> newItem = new List<Int64>();
+                        int itemIndex = 0;
+                        foreach (var itemTemp in item1.Zip<Int64, Int64>(item2))
+                        {
+                            if (itemTemp.First != itemTemp.Second)
+                            {
+                                newItem.Add(item[itemIndex]);
+                            }
+                            itemIndex++;
+                        }
+                        newItem.Add(item.Last());
+                        item = newItem.ToArray();
                         token_nums.Add(item);
                         token_len.Add(item.Length);
+                        
                     }
                     ctcOutput.Hyps = token_nums;
                     ctcOutput.Hyps_lens = token_len;
@@ -282,47 +292,84 @@ namespace WenetConformerAsr
                 IDisposableReadOnlyCollection<DisposableNamedOnnxValue> decoderResults = null;
                 decoderResults = _decoderSession.Run(container);
 
+                List<float> rescoring_score = new List<float>();
+
                 if (decoderResults != null)
                 {
                     var decoderResultsArray = decoderResults.ToArray();
-                    Tensor<float> logits_tensor = decoderResultsArray[0].AsTensor<float>();
-                    List<Int64[]> token_nums = new List<Int64[]> { };
-
-                    for (int i = 0; i < logits_tensor.Dimensions[0]; i++)
+                    Tensor<float> score_tensor = decoderResultsArray[0].AsTensor<float>();
+                    //method 1
+                    List<float> scoreList = new List<float>();
+                    for (int i = 0; i < score_tensor.Dimensions[0]; i++)
                     {
-                        Int64[] item = new Int64[logits_tensor.Dimensions[1]];
-                        for (int j = 0; j < logits_tensor.Dimensions[1]; j++)
+                        float score = 0.0f;
+                        Int64[] item = new Int64[score_tensor.Dimensions[1]];
+                        for (int j = 0; j < score_tensor.Dimensions[1]; j++)
                         {
-                            int token_num = 0;
-                            for (int k = 1; k < logits_tensor.Dimensions[2]; k++)
-                            {
-                                token_num = logits_tensor[i, j, token_num] > logits_tensor[i, j, k] ? token_num : k;
-                            }
-                            item[j] = (int)token_num;
+                            float currScore = score_tensor[i, j, (int)ctcOutputEntity.Hyps[i][j]];
+                            score += currScore;
                         }
-                        token_nums.Add(item);
+                        scoreList.Add(score);
                     }
-
                     Tensor<float> r_score_tensor = decoderResultsArray[1].AsTensor<float>();
-                    List<Int64[]> r_token_nums = new List<Int64[]> { };
-
+                    List<float> r_scoreList = new List<float>();
                     for (int i = 0; i < r_score_tensor.Dimensions[0]; i++)
                     {
-                        Int64[] item = new Int64[r_score_tensor.Dimensions[1]];
-                        for (int j = 0; j < r_score_tensor.Dimensions[1]; j++)
+                        float r_score = 0.0f;
+                        if (_customMetadata.Is_bidirectional_decoder && _customMetadata.Reverse_weight > 0)
                         {
-                            int token_num = 0;
-                            for (int k = 1; k < r_score_tensor.Dimensions[2]; k++)
+                            Int64[] item = new Int64[r_score_tensor.Dimensions[1]];
+                            for (int j = 0; j < r_score_tensor.Dimensions[1]; j++)
                             {
-                                token_num = r_score_tensor[i, j, token_num] > r_score_tensor[i, j, k] ? token_num : k;
+                                float currScore = r_score_tensor[i, j, (int)ctcOutputEntity.Hyps[i][j]];
+                                r_score += currScore;
                             }
-                            item[j] = (int)token_num;
                         }
-                        r_token_nums.Add(item);
+                        r_scoreList.Add(r_score);
+                    }
+                    DecodeOptionsEntity decodeOptions = new DecodeOptionsEntity();
+                    foreach(var item in scoreList.Zip<float, float>(r_scoreList))
+                    {
+                        float score = item.First;
+                        float r_score = item.Second;
+                        float reverse_weight = _customMetadata.Reverse_weight;
+                        // combined left-to-right and right-to-left score
+                        float rescoring_score_item = score * (1 - reverse_weight) + r_score * reverse_weight;
+                        rescoring_score.Add(rescoring_score_item);
+                    }
+                    decoderOutputEntity.Rescoring_score = rescoring_score;
+                    //method 2
+                    int num_hyps = ctcOutputEntity.Hyps.Count;
+                    int max_hyps_len = 0;
+                    int decode_out_len = score_tensor.Dimensions[2];
+                    for (int i = 0; i < num_hyps; ++i)
+                    {
+                        int length = ctcOutputEntity.Hyps[i].Length;// + 1
+                        max_hyps_len = Math.Max(length, max_hyps_len);
+                        //hyps_lens.emplace_back(static_cast<int64_t>(length));
+                    }
+                    float[] rescoring_score2 = new float[ctcOutputEntity.Hyps.Count];
+                    for (int i = 0; i < num_hyps; i++)
+                    {
+                        Int64[] hyp = ctcOutputEntity.Hyps[0];
+                        float score = 0.0f;
+                        // left to right decoder score
+                        score = ComputeAttentionScore(
+                            score_tensor.Skip(max_hyps_len * decode_out_len * i).ToArray(), hyp, _customMetadata.Eos_symbol, decode_out_len);
+                        // Optional: Used for right to left score
+                        float r_score = 0.0f;
+                        if (_customMetadata.Is_bidirectional_decoder && _customMetadata.Reverse_weight > 0)
+                        {
+                            Int64[] r_hyp = new List<Int64>(hyp).ToArray();
+                            // right to left decoder score
+                            r_score = ComputeAttentionScore(
+                                r_score_tensor.Skip(max_hyps_len * decode_out_len * i).ToArray(), r_hyp, _customMetadata.Eos_symbol, decode_out_len);
+                        }
+                        // combined left-to-right and right-to-left score
+                        rescoring_score2[i] =
+                            score * (1 - _customMetadata.Reverse_weight) + r_score * _customMetadata.Reverse_weight;
                     }
 
-                    decoderOutputEntity.Logits = logits_tensor.ToArray();
-                    decoderOutputEntity.Sample_ids = r_token_nums;
                 }
             }
             catch (Exception ex)
@@ -330,6 +377,17 @@ namespace WenetConformerAsr
                 //
             }
             return decoderOutputEntity;
+        }
+
+        private float ComputeAttentionScore(float[] prob, Int64[] hyp, int eos, int decode_out_len)
+        {
+            float score = 0.0f;
+            for (int j = 0; j < hyp.Length; j++)
+            {
+                score += prob[j * decode_out_len + hyp[j]];
+            }
+            //score += prob[hyp.Length * decode_out_len + eos];
+            return score;
         }
     }
 }
