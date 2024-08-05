@@ -21,8 +21,8 @@ A C# library for decoding the Wenet ASR onnx model
 ##### 模型的下载
 | 模型名称  |  类型 | 实时率RTF  | 支持语言  | 标点  |  时间戳 | 下载地址  |
 | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |
-|  wenet_onnx_aishell_u2pp_conformer_20210601_online | 流式  | cpu-rtf-0.20  | 中文  |  否 | 否  |[modelscope](https://www.modelscope.cn/models/manyeyes/wenet_onnx_aishell_u2pp_conformer_20210601_online "modelscope") |
-|  wenet_onnx_wenetspeech_u2pp_conformer_20220506_online | 流式 | cpu-rtf-0.20  |  中文 |  否  | 否  | [modelscope](https://www.modelscope.cn/models/manyeyes/wenet_onnx_wenetspeech_u2pp_conformer_20220506_online "modelscope")  |
+|  wenet-u2pp-conformer-aishell-onnx-online-20210601 | 流式  | cpu-rtf-0.20  | 中文  |  否 | 否  |[modelscope](https://www.modelscope.cn/models/manyeyes/wenet-u2pp-conformer-aishell-onnx-online-20210601 "modelscope") |
+|  wenet-u2pp-conformer-wenetspeech-onnx-online-20220506 | 流式 | cpu-rtf-0.20  |  中文 |  否  | 否  | [modelscope](https://www.modelscope.cn/models/manyeyes/wenet-u2pp-conformer-wenetspeech-onnx-online-20220506 "modelscope")  |
 
 ##### 模型的使用
 引用
