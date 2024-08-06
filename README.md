@@ -34,10 +34,10 @@ using WenetConformerAsr;
 //load model
 string applicationBase = AppDomain.CurrentDomain.BaseDirectory;
 string modelName = "wenet-u2pp-conformer-wenetspeech-onnx-offline-20220506";
-string encoderFilePath = applicationBase + "./" + modelName + "/encoder.quant.onnx";
-string decoderFilePath = applicationBase + "./" + modelName + "/decoder.quant.onnx";
-string ctcFilePath = applicationBase + "./" + modelName + "/ctc.quant.onnx";
-string tokensFilePath = applicationBase + "./" + modelName + "/units.txt";
+string encoderFilePath = applicationBase + "./" + modelName + "/encoder.int8.onnx";
+string decoderFilePath = applicationBase + "./" + modelName + "/decoder.int8.onnx";
+string ctcFilePath = applicationBase + "./" + modelName + "/ctc.int8.onnx";
+string tokensFilePath = applicationBase + "./" + modelName + "/tokens.txt";
 WenetConformerAsr.OfflineRecognizer offlineRecognizer = new WenetConformerAsr.OfflineRecognizer(encoderFilePath, decoderFilePath, ctcFilePath, tokensFilePath);
 ```
 ###### 3.调用
@@ -49,7 +49,7 @@ WenetConformerAsr.Model.OfflineRecognizerResultEntity result = offlineRecognizer
 Console.WriteLine(result.Text);
 ```
 ###### 4.输出结果：
-**中文**
+**中文** (wenet-u2pp-conformer-wenetspeech-onnx-offline-20220506)
 ```
 正是因为存在绝对正义所以我们接受现实的相对正议但是不要因为现实的相对正义我们就认为这个世界没有正义因为如果当你认为这个世界没有正义
 
@@ -67,7 +67,7 @@ rtf:0.11614353282530027
 end!
 ```
 
-**英文**
+**英文** (wenet-u2pp-conformer-gigaspeech-onnx-offline-20210728)
 ```
 after early nightfall the yellow lamps would light up here and there the squalid quarter of the brothels
 
@@ -90,10 +90,10 @@ using WenetConformerAsr;
 //load model
 string applicationBase = AppDomain.CurrentDomain.BaseDirectory;
 string modelName = "wenet-u2pp-conformer-wenetspeech-onnx-online-20220506";
-string encoderFilePath = applicationBase + "./" + modelName + "/encoder.quant.onnx";
-string decoderFilePath = applicationBase + "./" + modelName + "/decoder.quant.onnx";
-string ctcFilePath = applicationBase + "./" + modelName + "/ctc.quant.onnx";
-string tokensFilePath = applicationBase + "./" + modelName + "/units.txt";
+string encoderFilePath = applicationBase + "./" + modelName + "/encoder.int8.onnx";
+string decoderFilePath = applicationBase + "./" + modelName + "/decoder.int8.onnx";
+string ctcFilePath = applicationBase + "./" + modelName + "/ctc.int8.onnx";
+string tokensFilePath = applicationBase + "./" + modelName + "/tokens.txt";
 WenetConformerAsr.OnlineRecognizer onlineRecognizer = new WenetConformerAsr.OnlineRecognizer(encoderFilePath, decoderFilePath, ctcFilePath, tokensFilePath);
 ```
 ###### 3.调用
